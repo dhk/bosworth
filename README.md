@@ -1,64 +1,106 @@
-# repo-template
+# Bosworth
 
-A starting point for new personal repos, distilled from patterns already
-working across dhk's other repos (`work-ledger`, `familiar-places`, `fossil`,
-`crucible`, `skill-map`). Three goals drove the shape:
+**A personal capability and continuity layer for AI agents.**
 
-- **Instructive** — a stranger, human or Claude, can orient fast.
-- **Build in public** — the repo's own files carry the argument; nothing
-  depends on private context to make sense.
-- **Workflow-visible** — session continuity is a file, not a lost thread.
+Bosworth is intended to let a person move between Claude, ChatGPT, coding
+agents, devices, and underlying systems without repeatedly reconstructing
+context or losing track of work products. Existing AI applications remain the
+conversational interface; Bosworth supplies durable continuity and controlled
+access to capabilities behind them.
 
-## Use it
+The core proposition is:
 
-```bash
-cp -r template/ ~/Documents/dev/<new-repo-name>
-cd ~/Documents/dev/<new-repo-name>
-# fill in the <placeholders> in README.md, CLAUDE.md, HANDOFF.md
-git init && git add -A && git commit -m "Initial scaffold from repo-template"
+> **Start anywhere. Bosworth knows where you left off.**
+
+Bosworth is not primarily a chat client or an MCP aggregator. MCP and APIs are
+the adaptor layer. The durable product is the continuity layer.
+
+## Status
+
+Bosworth is in design and feasibility testing. No service runtime or supported
+client integration exists yet.
+
+- [x] Product hypothesis and Phase 1 boundaries defined
+- [x] Minimal Session Event Registry v0.1 specified
+- [ ] Registry service implemented
+- [ ] A client producer emits session lifecycle events
+- [ ] “Hello Bosworth” acceptance test passes end to end
+- [ ] Capability Registry contract specified
+- [ ] Artifact Registry contract specified
+- [ ] Cross-session context assembly implemented
+
+See [issue #1](https://github.com/dhk/bosworth/issues/1) for the first
+executable milestone.
+
+## Phase 1
+
+Phase 1 is a service/runtime exposing six related primitives:
+
+| Primitive | Question it answers |
+|---|---|
+| Capability Registry | What can my agents access and do? |
+| Session Store | What happened during a particular interaction? |
+| Journal | What significant things happened over time? |
+| Memory | What should the system currently remember or believe? |
+| Artifact Registry | What exists, which instance is canonical, and where does it live? |
+| Context Assembler | What does this interaction need to know right now? |
+
+The first implementation slice is intentionally narrower than Phase 1:
+instrument session existence and human interaction before attempting memory,
+semantic extraction, or context injection.
+
+## Architecture direction
+
+```text
+Claude / ChatGPT / CLI / IDE
+             |
+          Bosworth
+             |
+   continuity + capabilities
+             |
+       MCP / APIs / tools
+             |
+       user's systems
 ```
 
-Then work through [`SETUP.md`](template/SETUP.md) — the repo *settings* a file
-copy cannot carry.
+Existing AI clients remain the interface initially. A bespoke iPhone client is
+explicitly deferred until the service proves that current clients cannot
+provide the required experience.
 
-## What's in it, and why
+Secure capability access must eventually make authentication, permissions,
+risk level, approval requirements, and availability inspectable. MCP is the
+preferred adaptor protocol, but Bosworth must not depend on MCP being the only
+integration mechanism.
 
-| File | Answers | Pattern it's drawn from |
-|---|---|---|
-| `README.md` | What is this, why does it exist, what's actually done vs. planned | familiar-places (names its competitor), work-ledger (status honesty, links design issues instead of restating them), crucible ("check me out") |
-| `CLAUDE.md` | Stack, architecture, conventions, **workflow rules** | Every repo's CLAUDE.md; workflow rules specifically from fossil |
-| `HANDOFF.md` | Where did I leave off, what's next, known gotchas | familiar-places/handoff.md |
-| `docs/snapshots/` | Frozen record of a design session or pivot, dated | fossil/context-snapshot.md, reading-with-ears' dated snapshots (relocated out of repo root — see below) |
-| `SETUP.md` | The repo settings that a file copy cannot carry — branch protection, Actions permissions, Pages, secrets, and the local `gh` scope | Learned by hitting each one; see the file's closing note |
-| `docs/design/` | Why a decision was made, not just what it is | praxis's four-question CONTRIBUTING.md frame, crucible/docs/concepts |
-| `.scratch/` (gitignored) | Ephemeral working files — never committed | adventures-in-ai, work-ledger, crucible, reading-with-ears all already do this |
-| `LICENSE` | Building in public means someone else can actually use this | Present in nearly every repo already |
+## First experiment
 
-## What's deliberately left out by default
+[Session Event Registry v0.1](docs/design/session-event-registry-v0.1.md)
+defines a metadata-only, append-only event stream for:
 
-`CONTRIBUTING.md` and `.github/ISSUE_TEMPLATE/` aren't in the base template —
-most of these repos are solo build-in-public, not soliciting outside PRs. Add
-them per-repo (skill-map's `CONTRIBUTING.md` is a good model) once a project
-actually wants contributors.
+- `SESSION_STARTED`
+- `INTERACTION_OCCURRED`
+- `SESSION_HEARTBEAT`
+- `SESSION_ENDED`
 
-CI workflows (`.github/workflows/`) are project-specific by nature — copy the
-relevant one from `praxis`, `crucible`, `skill-map`, `tricorder`, or (for an
-Astro/Node static site — build + non-blocking `astro check`, since a
-type-check step usually needs to start informational until a codebase earns
-a hard gate) `DHK-website`, rather than templating a generic one that won't
-fit.
+Success means another process can establish that a session existed and that a
+human interaction occurred within it. It does **not** mean Bosworth can yet
+remember, summarize, or continue that session.
 
-## HANDOFF.md vs. docs/snapshots/ — the split that matters
+## Privacy boundary
 
-`HANDOFF.md` is **one file, always current, overwritten each session** — the
-first thing a fresh session (you or Claude) should read: where things stand,
-what's next, what to watch out for.
+The v0.1 registry records mechanics, not conversation content. The “Hello
+Bosworth” acceptance test must prove that lifecycle events are observable while
+the event database contains neither the human message nor the assistant reply.
 
-`docs/snapshots/YYYY-MM-DD-<topic>.md` is the opposite: **write-once,
-permanent** — the output of a design sprint or the reasoning behind a pivot,
-worth keeping forever.
+Future transcript, memory, and context systems require separate data contracts
+and privacy policies.
 
-Don't let one collapse into the other. reading-with-ears' dated snapshot
-files committed loose at the repo root are the cautionary example — right
-instinct (capture the session), wrong location (repo root, not `docs/`;
-accumulating, not superseding a living handoff doc).
+## Project continuity
+
+Read [HANDOFF.md](HANDOFF.md) before starting work. It is the living statement
+of current state, the next task, and known watch points. Standing design
+decisions belong under `docs/design/`.
+
+## License
+
+[MIT](template/LICENSE)
