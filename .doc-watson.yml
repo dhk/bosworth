@@ -1,0 +1,61 @@
+# Doc Watson enrollment: this repository's documentation contract.
+# Schema: https://github.com/dhk/doc-watson/blob/main/schemas/enrollment.schema.json
+# Level, audience, trigger decisions and exemptions are owner-declared facts.
+# Tools may question them; only the owner changes them.
+# Declared by the owner 2026-09-28 from the baseline audit's drafts.
+
+schema: 1
+standard: 0.3.0 # standard version last audited against
+level: 0 # declared by the owner, 2026-09-28
+audience: The owner, and agents that pick up the work from HANDOFF.md.
+
+# One decision per trigger rule, each with its reason.
+triggers:
+  install-guide:
+    applies: false
+    reason: Nothing is installable yet (README.md:20-21).
+  user-guides:
+    applies: false
+    reason: There is no runnable product to guide users through.
+  architecture:
+    applies: false
+    reason: The README's architecture direction (README.md:52-73) and the registry design carry the mental model; nothing is built.
+  adrs:
+    applies: false
+    reason: Standing design rationale lives in docs/design/ (README.md:100-102); no standalone decision records are needed yet.
+  agent-memory:
+    applies: true
+    reason: HANDOFF.md is the living state file agents read before each session (HANDOFF.md:7-12).
+  machine-contracts:
+    applies: false
+    reason: Nothing parses this repository; the event envelope is a design, not an implemented interface.
+  codeowners:
+    applies: false
+    reason: One owner (.github/CODEOWNERS:5); no shared review routing.
+  contributing:
+    applies: false
+    reason: Outside contributions are not invited (owner, 2026-09-28).
+  governance:
+    applies: false
+    reason: One maintainer.
+  roadmap:
+    applies: false
+    reason: The README status checklist and HANDOFF.md cover direction; no public audience is evident.
+  runbooks:
+    applies: false
+    reason: Nothing runs or pages anyone.
+  handover:
+    applies: false
+    reason: No other party operates this repository; HANDOFF.md is session continuity, not an operational handover.
+
+# Concerns deliberately not met. Truthfulness, hygiene and duplication, and
+# maintenance and verification cannot be exempted.
+exemptions: []
+
+last_audit:
+  revision: "d6d979f"
+  date: "2026-09-28"
+  record: https://github.com/dhk/doc-watson-audit/tree/main/audits/dhk/bosworth/2026-09-28
+
+# What a sweep may do on divergence: issue-and-draft-pr, issue, or report.
+on_drift: issue-and-draft-pr
