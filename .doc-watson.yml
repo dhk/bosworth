@@ -39,8 +39,8 @@ triggers:
     applies: false
     reason: One maintainer.
   roadmap:
-    applies: false
-    reason: The README status checklist and HANDOFF.md cover direction; no public audience is evident.
+    applies: true
+    reason: Public repository that invites contributions; direction belongs in a ROADMAP.md, which does not exist yet (owner, 2026-10-19).
   runbooks:
     applies: false
     reason: Nothing runs or pages anyone.
